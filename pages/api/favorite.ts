@@ -37,12 +37,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (req.method === 'DELETE') {
             const { currentUser } = await serverAuth(req, res);
-
             const { movieId } = req.query;
 
             const existingMovie = await prismadb.movie.findUnique({
                 where: {
-                    id: movieId,
+                    id: String(movieId),
                 }
             });
 
@@ -50,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 throw new Error('Invalid ID');
             }
 
-            const updatedFavoriteIds = without(currentUser.favoriteIds, movieId);
+            const updatedFavoriteIds = without(currentUser.favoriteIds, String(movieId));
 
             const updatedUser = await prismadb.user.update({
                 where: {
